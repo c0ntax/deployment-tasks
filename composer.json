@@ -1,0 +1,31 @@
+{
+    "name": "c0ntax/deployment-tasks",
+    "description": "A simple package to handle running scripts both pre and post deployment",
+    "minimum-stability": "stable",
+    "license": "Apache-2.0",
+    "authors": [
+        {
+            "name": "Dan Burzynski",
+            "email": "contax@phrenetic.org"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "C0ntax\\DeploymentTasks\\": "src",
+            "C0ntax\\DeploymentTasks\\Bin\\": "bin"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "C0ntax\\DeploymentTasks\\Tests\\": "tests"
+        }
+    },
+    "require": {
+        "php": ">=7.1",
+        "knplabs/gaufrette": "^0.8.1"
+    },
+    "require-dev": {
+        "pds/skeleton": "^1.0",
+        "phpunit/phpunit": "^8.1"
+    }
+}
