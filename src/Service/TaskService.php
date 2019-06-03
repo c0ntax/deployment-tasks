@@ -5,7 +5,13 @@ namespace C0ntax\DeploymentTasks\Service;
 
 use C0ntax\DeploymentTasks\Contracts\TaskServiceInterface;
 use C0ntax\DeploymentTasks\Entity\Task;
+use C0ntax\DeploymentTasks\Exception\Service\TaskService\TaskNotRememberedException;
+use C0ntax\DeploymentTasks\Exception\Service\TaskService\TaskNotRunException;
+use C0ntax\DeploymentTasks\Exception\Service\TaskService\TaskNotSuccessException;
+use C0ntax\DeploymentTasks\Gaufrette\Adapter\Local;
+use Exception;
 use Gaufrette\FilesystemInterface;
+use InvalidArgumentException;
 
 /**
  * Class TaskService
@@ -15,9 +21,6 @@ use Gaufrette\FilesystemInterface;
  */
 class TaskService implements TaskServiceInterface
 {
-    public const TASK_TYPE_PRE = 'Pre';
-    public const TASK_TYPE_POST = 'Post';
-
     /** @var FilesystemInterface */
     private $taskFilesystem;
 
@@ -29,6 +32,8 @@ class TaskService implements TaskServiceInterface
      *
      * @param FilesystemInterface $taskFilesystem
      * @param FilesystemInterface $memoryFilesystem
+     *
+     * @throws InvalidArgumentException
      */
     public function __construct(FilesystemInterface $taskFilesystem, FilesystemInterface $memoryFilesystem)
     {
@@ -48,12 +53,38 @@ class TaskService implements TaskServiceInterface
     {
         $taskKeys = $this->getToRunTaskKeys($taskType);
 
+        $directory = $this->getTaskFilesystem()->getAdapter()->getDirectory();
+
         $tasks = [];
         foreach ($taskKeys as $taskKey) {
-            $tasks[] = new Task($taskKey, './'.$taskKey);
+            $tasks[] = new Task($taskKey, [$directory.'/'.$taskKey]);
         }
 
         return $tasks;
+    }
+
+    /**
+     * @param Task $task
+     *
+     * @throws TaskNotRememberedException
+     * @throws TaskNotRunException
+     * @throws TaskNotSuccessException
+     */
+    public function rememberTask(Task $task): void
+    {
+        if (!$task->isRun()) {
+            throw new TaskNotRunException(sprintf('Task %s has not been run yet', $task->getId()));
+        }
+
+        if (!$task->isSuccess()) {
+            throw new TaskNotSuccessException(sprintf('Task %s has not been successful', $task->getId()));
+        }
+
+        try {
+            $this->getMemoryFilesystem()->write($task->getId(), (string) time());
+        } catch (Exception $exception) {
+            throw new TaskNotRememberedException(sprintf('Task %s could not be committed to memory', $task->getId()), 0, $exception);
+        }
     }
 
     /**
@@ -107,11 +138,6 @@ class TaskService implements TaskServiceInterface
         return $allFileKeys;
     }
 
-    private function getRunTasks(string $taskType): array
-    {
-
-    }
-
     /**
      * @return FilesystemInterface
      */
@@ -124,9 +150,13 @@ class TaskService implements TaskServiceInterface
      * @param FilesystemInterface $taskFilesystem
      *
      * @return TaskService
+     * @throws InvalidArgumentException
      */
     private function setTaskFilesystem(FilesystemInterface $taskFilesystem): TaskService
     {
+        if (!$taskFilesystem->getAdapter() instanceof Local) {
+            throw new InvalidArgumentException(sprintf('Sadly, this only supports the %s adapter currently', Local::class));
+        }
         $this->taskFilesystem = $taskFilesystem;
 
         return $this;

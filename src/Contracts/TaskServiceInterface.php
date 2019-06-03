@@ -10,6 +10,9 @@ use C0ntax\DeploymentTasks\Entity\Task;
  */
 interface TaskServiceInterface
 {
+    public const TASK_TYPE_PRE = 'Pre';
+    public const TASK_TYPE_POST = 'Post';
+
     /**
      * Given a pre or post task type, return a list of task objects.
      *
@@ -18,4 +21,11 @@ interface TaskServiceInterface
      * @return Task[]
      */
     public function getTasks(string $taskType): array;
+
+    /**
+     * Commits a task to memory
+     *
+     * @param Task $task
+     */
+    public function rememberTask(Task $task): void;
 }

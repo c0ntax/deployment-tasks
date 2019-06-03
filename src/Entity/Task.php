@@ -11,7 +11,7 @@ class Task
     /** @var string */
     private $id;
 
-    /** @var string */
+    /** @var array */
     private $cmd;
 
     /** @var bool */
@@ -24,11 +24,11 @@ class Task
      * Task constructor.
      *
      * @param string $id
-     * @param string $cmd
+     * @param array  $cmd
      * @param bool   $run
      * @param bool   $success
      */
-    public function __construct(string $id, string $cmd, bool $run = false, bool $success = false)
+    public function __construct(string $id, array $cmd, bool $run = false, bool $success = false)
     {
         $this
             ->setId($id)
@@ -46,9 +46,9 @@ class Task
     }
 
     /**
-     * @return string
+     * @return array
      */
-    public function getCmd(): string
+    public function getCmd(): array
     {
         return $this->cmd;
     }
@@ -63,6 +63,7 @@ class Task
 
     /**
      * @param bool $run
+     *
      * @return Task
      */
     public function setRun(bool $run): Task
@@ -82,6 +83,7 @@ class Task
 
     /**
      * @param bool $success
+     *
      * @return Task
      */
     public function setSuccess(bool $success): Task
@@ -93,6 +95,7 @@ class Task
 
     /**
      * @param string $id
+     *
      * @return Task
      */
     private function setId(string $id): Task
@@ -103,11 +106,11 @@ class Task
     }
 
     /**
-     * @param string $cmd
+     * @param array $cmd
      *
      * @return Task
      */
-    private function setCmd(string $cmd): Task
+    private function setCmd(array $cmd): Task
     {
         $this->cmd = $cmd;
 
