@@ -1,5 +1,6 @@
 {
     "name": "c0ntax/deployment-tasks",
+    "type": "library",
     "description": "A simple package to handle running scripts both pre and post deployment",
     "minimum-stability": "stable",
     "license": "Apache-2.0",
