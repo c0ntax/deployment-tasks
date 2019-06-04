@@ -28,4 +28,11 @@ interface TaskServiceInterface
      * @param Task $task
      */
     public function rememberTask(Task $task): void;
+
+    /**
+     * Returns the path to where all the Tasks are configured to be stored
+     *
+     * @return string
+     */
+    public function getTasksDirectory(): string;
 }

@@ -53,11 +53,9 @@ class TaskService implements TaskServiceInterface
     {
         $taskKeys = $this->getToRunTaskKeys($taskType);
 
-        $directory = $this->getTaskFilesystem()->getAdapter()->getDirectory();
-
         $tasks = [];
         foreach ($taskKeys as $taskKey) {
-            $tasks[] = new Task($taskKey, [$directory.'/'.$taskKey]);
+            $tasks[] = new Task($taskKey, [$this->getTasksDirectory().'/'.$taskKey]);
         }
 
         return $tasks;
@@ -85,6 +83,14 @@ class TaskService implements TaskServiceInterface
         } catch (Exception $exception) {
             throw new TaskNotRememberedException(sprintf('Task %s could not be committed to memory', $task->getId()), 0, $exception);
         }
+    }
+
+    /**
+     * @return string
+     */
+    public function getTasksDirectory(): string
+    {
+        return $this->getTaskFilesystem()->getAdapter()->getDirectory();
     }
 
     /**
